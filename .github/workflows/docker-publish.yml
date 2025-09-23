@@ -1,0 +1,31 @@
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to Quay.io
+        run: echo "${{ secrets.QUAY_PASSWORD }}" | docker login quay.io -u "${{ secrets.QUAY_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t quay.io/gamebrot/osm:latest .
+
+      - name: Scan container image with Tenable Cloud Security
+        uses: tenable/cloud-security-actions/container-image/scan@v1
+        with:
+          api-token: ${{ secrets.TENABLE_API_TOKEN }}
+          api-url: https://sg.app.ermetic.com
+          name: quay.io/gamebrot/osm:latest
+
+      - name: Push to Quay.io
+        run: |
+          docker push quay.io/gamebrot/osm:latest
+
