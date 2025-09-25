@@ -22,6 +22,6 @@ LABEL org.label-schema.name="Osmedeus - X Linux" \
       org.opencontainers.image.description="Automated pentest framework for offensive security experts"
 
 EXPOSE 7681
-
+#
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["ttyd", "-W", "-O", "login", "-f", "root", "bash"]
